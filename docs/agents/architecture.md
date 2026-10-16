@@ -62,14 +62,23 @@ ContactForm (client) ─POST─> app/api/contact/route.ts ─> Resend（任意�
   | 画面を開いて 2 秒未満で送信 | 400 `reason: "too_fast"` | 人間なら数秒後の再送で通るので、画面にその旨を表示 |
   | ハニーポットに値あり | 200（破棄） | bot に失敗を教えないため成功を装う。ログに `dropped` |
   | URL が 3 個以上 | 200（破棄） | 同上 |
+  | Turnstile（`TURNSTILE_SECRET_KEY` 設定時のみ） | トークンなし 400 `captcha_required` / 検証失敗 403 `captcha_failed` / Cloudflare に到達不能 503 `captcha_unavailable` | 外部通信を伴うので、安い判定をすべて通った後に行う（bot の破棄では Cloudflare を呼ばない） |
 
 - 限界（人間に伝えること）:
   - レート制限はプロセス内メモリ。サーバーレス（Vercel）ではインスタンスごとに数えるので、大量送信の抑止にはなるが厳密な上限ではない。厳密にするなら Upstash / Vercel KV 等の共有ストアが必要。
   - IP は `x-real-ip` / `x-forwarded-for` から取る。Vercel では信頼できるが、自前ホスティングでは偽装できる。
-  - `startedAt` と `Origin` は、APIを直接叩く標的型の bot には偽装できる。最終的な対策は CAPTCHA（Cloudflare Turnstile 等）で、アカウント・キーの用意と、第三者スクリプト読み込みのプライバシーポリシーへの記載が必要（現状 `/privacy` は本文が未掲載）。**人間に確認してから**導入する。
+  - `startedAt` と `Origin` は、API を直接叩く標的型の bot には偽装できる。それを止めるのが Turnstile（下記。キーを設定したときだけ有効）。
+- **Turnstile（Cloudflare の CAPTCHA）**: 既定は無効。2 つの環境変数を**両方**設定したときだけ有効になる。
+  - `NEXT_PUBLIC_TURNSTILE_SITE_KEY`（公開してよい値。**ビルド時に埋め込まれる**ので、変更後は再デプロイが必要）→ フォームにウィジェットを表示し、トークン取得まで送信ボタンを無効化する（`components/Turnstile.tsx`）。Cloudflare のスクリプトはこのキーがあるときだけ読み込む。
+  - `TURNSTILE_SECRET_KEY`（秘密。サーバー側のみ）→ `lib/turnstile.ts` が siteverify でトークンを検証する。トークンは 1 回限りなので、フォームは送信のたびにウィジェットを取り直す。
+  - どちらか片方だけだと壊れる（サイトキーのみ → 送信が通るが検証されない。シークレットのみ → ウィジェットがなく常に 400）。**必ず両方**。
+  - Cloudflare に到達できないときは fail closed（503）。可用性より CAPTCHA の意味を優先している。
+  - 導入前に必要なこと: ① Cloudflare でサイトを作りキーを発行（人間） ② `/privacy` に Cloudflare Turnstile の利用を記載（現状 `/privacy` は本文未掲載のため、クライアント確認が先）。
+  - テストには Cloudflare の公式テストキー（サイトキー `1x00000000000000000000AA` / シークレット `1x0000000000000000000000000000000AA`、常に成功）が使える。
+  - **本物の Cloudflare との疎通は自動テストで確認していない**（この開発環境から Cloudflare に接続できないため）。`npm run smoke` はローカルのモックを `TURNSTILE_VERIFY_URL` で差し込んで、リクエスト形式と結果ごとの振り分けだけを検証する（`TURNSTILE_VERIFY_URL` はテスト専用。本番では設定しない）。本番でキーを設定したら、実際に 1 通送って確認すること。
 - `RESEND_API_KEY` と `CONTACT_TO` がそろえば Resend で送信（失敗・到達不能は 502）。未設定ならログ出力のみで `{ ok: true, delivered: false }` を返す。
 - 送信元は `CONTACT_FROM`（省略時 `株式会社タツミ <noreply@tatsumi-oni.co.jp>`）。件名・本文に入れる 1 行項目は改行・制御文字を除去する。
-- `npm run smoke` はダミーの Resend 設定でサーバーを起動し、「送信を試みた = 502」「bot として破棄 = 200」の違いで上記の振り分けを検証する（実際にメールは送られない）。
+- `npm run smoke` は `node_modules/.bin/next` を直接起動する（`npx` 経由だと終了時に next-server が残り、次回の実行が古いサーバーに繋がって不安定になる）。ダミーの Resend 設定でサーバーを起動し、「送信を試みた = 502」「bot として破棄 = 200」の違いで上記の振り分けを検証する（実際にメールは送られない）。
 
 ## スタイル
 

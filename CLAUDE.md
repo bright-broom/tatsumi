@@ -24,7 +24,7 @@ ESLint の設定は `eslint.config.mjs`。ルールを無効化して通すの�
 - `content/site.ts` … 全テキスト・リンク・画像参照の **唯一の情報源**。文言変更はほぼここだけで済む。
 - `content/news.json` … お知らせ（新しい順。トップは先頭 6 件、`/news` は全件）。
 - `app/page.tsx` … ワンページ本体。`content/site.ts` の各オブジェクトを 01〜11 のセクションに描画。
-- `app/api/contact/route.ts` + `lib/contactSchema.ts` + `lib/spamGuard.ts` … お問い合わせ。スパム対策（サイズ・Origin・レート制限・検証・送信時間・ハニーポット・リンク検出）→ Resend で送信（環境変数未設定ならログのみ）。判定順と限界は `docs/agents/architecture.md`。
+- `app/api/contact/route.ts` + `lib/contactSchema.ts` + `lib/spamGuard.ts` … お問い合わせ。スパム対策（サイズ・Origin・レート制限・検証・送信時間・ハニーポット・リンク検出・任意で Turnstile `lib/turnstile.ts`）→ Resend で送信（環境変数未設定ならログのみ）。判定順と限界は `docs/agents/architecture.md`。
 - `components/` … Header / Hero / Gallery / ContactForm / Footer / Reveal。クライアントコンポーネントは `"use client"` 付きのみ。
 - `app/globals.css` … スタイルはここ 1 枚（CSS Modules / Tailwind は不使用）。
 - `public/images/tatsumi/` … 画像。`content/site.ts` から `img("ファイル名", "alt")` で参照。寸法は `content/image-sizes.json`（生成物）から引く。
@@ -47,6 +47,7 @@ ESLint の設定は `eslint.config.mjs`。ルールを無効化して通すの�
 - `site.url`（OGP の絶対 URL）、`.env*`、Resend の送信元ドメインは本番設定。勝手に変えない。
 - 画像の差し替え・追加は権利確認が前提。出典不明の画像を入れない。
 - `main` へ直接 push しない。ブランチを切って PR（ドラフト）を作る。
+- Turnstile のキー（`NEXT_PUBLIC_TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY`）は人間が Vercel に設定する。片方だけ設定すると壊れるので、手順は `docs/agents/architecture.md`。
 - **ホスティング（Vercel）の設定やシークレットには触れない。**
 
 ## 完了の定義

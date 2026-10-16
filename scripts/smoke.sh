@@ -9,9 +9,19 @@
 set -u
 PORT="${1:-3111}"
 BASE="http://localhost:${PORT}"
-RESEND_API_KEY=smoke-fake-key CONTACT_TO=smoke@example.invalid npx next start -p "$PORT" >/dev/null 2>&1 &
+# npx 経由だと終了時に next-server が残り、次回の実行でポートを占有して古いサーバーに接続してしまうため、
+# next を直接起動する（PID がそのまま next-server になる）。
+NEXT=node_modules/.bin/next
+for p in "$PORT" $((PORT + 1)); do
+  if curl -s -o /dev/null -m 2 "http://localhost:${p}/"; then
+    echo "port ${p} is already in use (stale server?). Stop it and retry." >&2
+    exit 2
+  fi
+done
+RESEND_API_KEY=smoke-fake-key CONTACT_TO=smoke@example.invalid "$NEXT" start -p "$PORT" >/dev/null 2>&1 &
 PID=$!
-trap 'kill $PID 2>/dev/null' EXIT
+PID2=''; MOCK=''
+trap 'kill $PID $PID2 $MOCK 2>/dev/null; wait 2>/dev/null' EXIT
 
 for _ in $(seq 1 30); do
   curl -s -o /dev/null "$BASE/" && break
@@ -62,5 +72,39 @@ last=""
 for _ in $(seq 1 11); do last="$(post 10.9.9.9 '{}')"; done
 check "contact rate limit (11th)" 429 "$last"
 check "rate limit is per IP"      400 "$(post 10.9.9.10 '{}')"
+
+# --- Turnstile（CAPTCHA）---
+# Cloudflare の代わりにローカルのモックを siteverify として使う。トークン "pass" だけ成功。
+# 本物の Cloudflare との疎通はここでは確認できない（リクエストの形式と、結果ごとの振り分けだけを検証する）。
+MOCK_PORT=$((PORT + 20)); TS_PORT=$((PORT + 1)); MOCK_LOG="$(mktemp)"
+node -e '
+const http = require("http"), fs = require("fs");
+http.createServer((req, res) => {
+  let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => {
+    fs.appendFileSync(process.argv[2], b + "\n");
+    const ok = new URLSearchParams(b).get("response") === "pass";
+    res.setHeader("content-type", "application/json");
+    res.end(JSON.stringify(ok ? { success: true } : { success: false, "error-codes": ["invalid-input-response"] }));
+  });
+}).listen(Number(process.argv[1]));
+' "$MOCK_PORT" "$MOCK_LOG" &
+MOCK=$!
+RESEND_API_KEY=smoke-fake-key CONTACT_TO=smoke@example.invalid TURNSTILE_SECRET_KEY=smoke-secret \
+  TURNSTILE_VERIFY_URL="http://localhost:${MOCK_PORT}/siteverify" "$NEXT" start -p "$TS_PORT" >/dev/null 2>&1 &
+PID2=$!
+for _ in $(seq 1 30); do curl -s -o /dev/null "http://localhost:${TS_PORT}/" && break; sleep 1; done
+
+TS="http://localhost:${TS_PORT}/api/contact"
+tbody() { printf '{"name":"smoke","email":"a@b.jp","message":"hello","confirmed":true,"startedAt":%s%s}' "$OLD" "${1:-}"; }
+tpost() { code -X POST "$TS" -H "$J" -H "x-real-ip: $1" -d "$2"; }
+check "turnstile: no token"            400 "$(tpost 10.1.0.1 "$(tbody)")"
+check "turnstile: bad token"           403 "$(tpost 10.1.0.2 "$(tbody ',"turnstileToken":"nope"')")"
+check "turnstile: good token -> sent"  502 "$(tpost 10.1.0.3 "$(tbody ',"turnstileToken":"pass"')")"
+check "turnstile: bot dropped before captcha call" 200 "$(tpost 10.1.0.4 "$(tbody ',"hp_url_confirm":"x"')")"
+check "turnstile: request has secret+response" 1 "$(grep -c 'secret=smoke-secret&response=pass' "$MOCK_LOG" | tr -d ' ')"
+check "turnstile: mock called only for real attempts" 2 "$(grep -c . "$MOCK_LOG" | tr -d ' ')"
+kill "$MOCK" 2>/dev/null; wait "$MOCK" 2>/dev/null
+check "turnstile: Cloudflare unreachable -> 503" 503 "$(tpost 10.1.0.5 "$(tbody ',"turnstileToken":"pass"')")"
+rm -f "$MOCK_LOG"
 
 exit $fail

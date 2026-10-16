@@ -70,6 +70,17 @@ CONTACT_TO=info@your-domain.jp
 CONTACT_FROM="株式会社タツミ <noreply@your-domain.jp>"   # 省略時は noreply@tatsumi-oni.co.jp
 ```
 
+### スパム対策（Cloudflare Turnstile・任意）
+
+ハニーポット・送信時間・レート制限などは常に有効です。さらに強い CAPTCHA が必要な場合は、Cloudflare で Turnstile のキーを発行し、**次の 2 つを両方**設定してください（片方だけだと動きません）。未設定なら Turnstile は無効で、Cloudflare への通信もありません。
+
+```
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=...   # 公開してよい値。ビルド時に埋め込まれるので、設定後に再デプロイ
+TURNSTILE_SECRET_KEY=...             # 秘密。サーバー側のみ
+```
+
+有効にする場合は、`/privacy` に Cloudflare Turnstile を利用している旨の記載が必要です。詳細は `docs/agents/architecture.md`。
+
 ## 開発
 
 ```
