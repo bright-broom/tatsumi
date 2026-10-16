@@ -47,13 +47,29 @@ ContactForm (client) ─POST─> app/api/contact/route.ts ─> Resend（任意�
 
 ## お問い合わせ API
 
-- 検証は `lib/contactSchema.ts`（zod）。フォームとサーバーで同じスキーマを共有。
-  - 必須: `name`, `email`, `message`, `confirmed`（確認チェック。`true` のみ可）
-  - 任意: `tel`（数字・`+-() ` のみ）
-  - `company` はハニーポット。**値が入っていれば 400**。フォームでは非表示の空欄。
-- `RESEND_API_KEY` と `CONTACT_TO` がそろえば Resend で送信（失敗は 502）。未設定ならログ出力のみで `{ ok: true, delivered: false }` を返す。
-- 送信元は `CONTACT_FROM`（省略時 `株式会社タツミ <noreply@tatsumi-oni.co.jp>`）。
-- レート制限・CAPTCHA は未実装（既知の制約。必要なら人間に提案する）。
+- 検証は `lib/contactSchema.ts`（zod）。`contactFormSchema`（フォーム項目。ブラウザの `zodResolver` でも使う）と、それに `startedAt` を足した `contactSchema`（API が受け取る本文）がある。
+  - 必須: `name`, `email`, `message`, `confirmed`（確認チェック。`true` のみ可）。任意: `tel`（数字・`+-() ` のみ）。
+  - `hp_url_confirm` はハニーポット（画面外に置いた空欄。ブラウザの自動入力に反応しないよう `company` などの名前は避けている）。
+  - `startedAt` はフォームを開いた時刻（epoch ms）。`ContactForm` が送信時に付ける。
+- スパム対策（`lib/spamGuard.ts` + `app/api/contact/route.ts`）。上から順に判定する:
+
+  | 判定 | 結果 | 備考 |
+  |---|---|---|
+  | 本文が 20KB 超 | 413 | `Content-Length` と実サイズの両方を見る |
+  | `Origin` が自サイトと違う | 403 | `Origin` なし（curl 等）は許可 |
+  | 同一 IP が 10 分で 11 回目 | 429 + `Retry-After` | 検証エラーも回数に数える |
+  | スキーマ違反 | 400 | |
+  | 画面を開いて 2 秒未満で送信 | 400 `reason: "too_fast"` | 人間なら数秒後の再送で通るので、画面にその旨を表示 |
+  | ハニーポットに値あり | 200（破棄） | bot に失敗を教えないため成功を装う。ログに `dropped` |
+  | URL が 3 個以上 | 200（破棄） | 同上 |
+
+- 限界（人間に伝えること）:
+  - レート制限はプロセス内メモリ。サーバーレス（Vercel）ではインスタンスごとに数えるので、大量送信の抑止にはなるが厳密な上限ではない。厳密にするなら Upstash / Vercel KV 等の共有ストアが必要。
+  - IP は `x-real-ip` / `x-forwarded-for` から取る。Vercel では信頼できるが、自前ホスティングでは偽装できる。
+  - `startedAt` と `Origin` は、APIを直接叩く標的型の bot には偽装できる。最終的な対策は CAPTCHA（Cloudflare Turnstile 等）で、アカウント・キーの用意と、第三者スクリプト読み込みのプライバシーポリシーへの記載が必要（現状 `/privacy` は本文が未掲載）。**人間に確認してから**導入する。
+- `RESEND_API_KEY` と `CONTACT_TO` がそろえば Resend で送信（失敗・到達不能は 502）。未設定ならログ出力のみで `{ ok: true, delivered: false }` を返す。
+- 送信元は `CONTACT_FROM`（省略時 `株式会社タツミ <noreply@tatsumi-oni.co.jp>`）。件名・本文に入れる 1 行項目は改行・制御文字を除去する。
+- `npm run smoke` はダミーの Resend 設定でサーバーを起動し、「送信を試みた = 502」「bot として破棄 = 200」の違いで上記の振り分けを検証する（実際にメールは送られない）。
 
 ## スタイル
 
