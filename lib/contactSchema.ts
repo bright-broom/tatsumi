@@ -11,7 +11,11 @@ export const contactFormSchema = z.object({
   hp_url_confirm: z.string().max(200).optional(),
 });
 
-/** API が受け取る本文。フォーム項目に、画面を開いた時刻（epoch ms。速すぎる送信の検出用）を足したもの。 */
-export const contactSchema = contactFormSchema.extend({ startedAt: z.number().int().positive() });
+/** API が受け取る本文。フォーム項目に、画面を開いた時刻（epoch ms。速すぎる送信の検出用）と CAPTCHA トークンを足したもの。 */
+export const contactSchema = contactFormSchema.extend({
+  startedAt: z.number().int().positive(),
+  /** Cloudflare Turnstile のトークン。TURNSTILE_SECRET_KEY 設定時のみ必須（route.ts で判定）。 */
+  turnstileToken: z.string().max(2048).optional(),
+});
 
 export type ContactInput = z.infer<typeof contactFormSchema>;

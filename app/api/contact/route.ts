@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { contactSchema } from "@/lib/contactSchema";
+import { turnstileEnabled, verifyTurnstile } from "@/lib/turnstile";
 import { MAX_BODY_BYTES, MIN_FILL_MS, clientIp, hasLinkSpam, isCrossOrigin, oneLine, rateLimit } from "@/lib/spamGuard";
 
 /**
@@ -9,7 +10,7 @@ import { MAX_BODY_BYTES, MIN_FILL_MS, clientIp, hasLinkSpam, isCrossOrigin, oneL
  *
  * スパム対策（docs/agents/architecture.md 参照）:
  *   サイズ上限 → 他サイトからの送信 → IP レート制限 → 入力検証 → 速すぎる送信
- *   → ハニーポット / リンクスパム（bot には成功を装って破棄する）
+ *   → ハニーポット / リンクスパム（bot には成功を装って破棄する）→ Turnstile（任意）
  */
 const silentDrop = (reason: string, ip: string) => {
   console.info("[contact] dropped", { reason, ip });
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ ok: false, errors: parsed.error.flatten().fieldErrors }, { status: 400 });
   }
-  const { name, email, tel, message, startedAt, hp_url_confirm } = parsed.data;
+  const { name, email, tel, message, startedAt, hp_url_confirm, turnstileToken } = parsed.data;
 
   const elapsed = Date.now() - startedAt;
   if (elapsed < MIN_FILL_MS) {
@@ -43,6 +44,14 @@ export async function POST(req: Request) {
   }
   if (hp_url_confirm) return silentDrop("honeypot", ip);
   if (hasLinkSpam(name, message)) return silentDrop("link-spam", ip);
+
+  // CAPTCHA（TURNSTILE_SECRET_KEY 設定時のみ）。外部通信を伴うので、安い判定をすべて通った後に行う。
+  if (turnstileEnabled()) {
+    if (!turnstileToken) return NextResponse.json({ ok: false, reason: "captcha_required" }, { status: 400 });
+    const result = await verifyTurnstile(turnstileToken, ip);
+    if (result === "failed") return NextResponse.json({ ok: false, reason: "captcha_failed" }, { status: 403 });
+    if (result === "unavailable") return NextResponse.json({ ok: false, reason: "captcha_unavailable" }, { status: 503 });
+  }
 
   const key = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_TO;

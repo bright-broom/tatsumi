@@ -13,7 +13,7 @@ description: 変更後にこのサイトを検証する。typecheck + build + �
 2. `npm run verify` を実行する（typecheck → lint → 画像寸法チェック → build）。
    - 失敗したら原因を特定して直す。チェックを外して通さない。
    - フォント取得（Google Fonts）でネットワークエラーなら、コードの問題ではなく環境の問題として報告する。
-3. `npm run smoke` を実行する（`build` 済みであること）。18 項目すべて `ok` になること。
+3. `npm run smoke` を実行する（`build` 済みであること）。25 項目すべて `ok` になること。
 4. build の出力を確認する。
    - ルート一覧が `/`, `/news`, `/privacy` = ○（静的）、`/api/contact` = ƒ（動的）であること。
    - 既知の警告は `globals.css` の autoprefixer 1 件のみ。**新しい警告が出たら直す。**

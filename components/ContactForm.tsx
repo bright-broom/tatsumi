@@ -4,18 +4,23 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { contactFormSchema, type ContactInput } from "@/lib/contactSchema";
+import Turnstile, { TURNSTILE_SITE_KEY } from "@/components/Turnstile";
 
 export default function ContactForm() {
-  const [status, setStatus] = useState<"idle" | "ok" | "error" | "retry">("idle");
+  const [status, setStatus] = useState<"idle" | "ok" | "error" | "retry" | "captcha">("idle");
   const [startedAt, setStartedAt] = useState(() => Date.now());
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaReset, setCaptchaReset] = useState(0);
+  const captchaPending = Boolean(TURNSTILE_SITE_KEY) && !captchaToken;
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ContactInput>({ resolver: zodResolver(contactFormSchema) });
 
   const onSubmit = async (data: ContactInput) => {
     setStatus("idle");
-    const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...data, startedAt }) });
+    const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...data, startedAt, turnstileToken: captchaToken ?? undefined }) });
+    setCaptchaReset((n) => n + 1); // トークンは 1 回限り。成否にかかわらず取り直す
     if (res.ok) { setStatus("ok"); reset(); setStartedAt(Date.now()); return; }
     const reason = await res.json().then((j: { reason?: string }) => j.reason).catch(() => undefined);
-    setStatus(reason === "too_fast" ? "retry" : "error");
+    setStatus(reason === "too_fast" ? "retry" : reason?.startsWith("captcha_") ? "captcha" : "error");
   };
 
   return (
@@ -48,9 +53,11 @@ export default function ContactForm() {
         <span>入力内容を確認しました</span>
       </label>
       {errors.confirmed && <span className="err">{errors.confirmed.message}</span>}
-      <button type="submit" disabled={isSubmitting}>{isSubmitting ? "送信中…" : "送信する"}</button>
+      <Turnstile onToken={setCaptchaToken} resetKey={captchaReset} />
+      <button type="submit" disabled={isSubmitting || captchaPending}>{isSubmitting ? "送信中…" : "送信する"}</button>
       {status === "ok" && <p className="form-msg" role="status">送信しました。担当者よりご連絡いたします。</p>}
       {status === "retry" && <p className="form-msg" role="alert">送信が早すぎたため受け付けられませんでした。数秒おいて、もう一度お試しください。</p>}
+      {status === "captcha" && <p className="form-msg" role="alert">ロボットでないことの確認に失敗しました。確認をやり直して、もう一度送信してください。</p>}
       {status === "error" && <p className="form-msg" role="alert">送信に失敗しました。お手数ですがお電話でお問い合わせください。</p>}
     </form>
   );

@@ -42,7 +42,7 @@
 
 1. CI（`.github/workflows/ci.yml`）の green を維持する。
 2. （完了）ESLint 導入済み。
-3. ★ CAPTCHA（Turnstile 等）の導入。現状はハニーポット・送信時間・レート制限・リンク検出まで（`architecture.md` 参照）。キーの用意とプライバシーポリシーへの記載が前提。
+3. ★ Turnstile を本番で有効化する（コードは実装済み・既定は無効）。キー発行、Vercel への環境変数設定、`/privacy` への記載が必要（`architecture.md` 参照）。
 4. ★ レート制限を共有ストア（Upstash / Vercel KV）に移す。
 5. a11y 確認（フォーカス表示、Lightbox のキー操作、見出し階層）。
 6. （完了）画像は `next/image` に移行済み。
