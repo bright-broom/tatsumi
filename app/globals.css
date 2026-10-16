@@ -99,6 +99,8 @@ button { font: inherit; }
 .stats b { display: block; font-family: var(--mincho); font-weight: 400; font-size: 36px; line-height: 1.4; }
 .stats b span { font-size: 14px; margin-left: 4px; color: var(--silver-2); }
 .stats p { margin: 0; font-size: 13px; color: var(--silver-2); }
+@media (max-width: 600px) { .stats { grid-template-columns: repeat(2, 1fr); gap: 20px 16px; } .stats b { font-size: 30px; } }
+@media (max-width: 520px) { .header .brand-sub { display: none; } }
 @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } .vt { display: none; } }
 
 /* ===== Blocks ===== */
@@ -110,6 +112,7 @@ button { font: inherit; }
 .img-pair img { width: 100%; object-fit: cover; }
 .img-pair img:first-child { aspect-ratio: 4 / 5; }
 .img-pair img:last-child { aspect-ratio: 4 / 3; }
+.img-pair.even { grid-template-columns: 1fr 1fr; align-items: stretch; } /* 同じ比率の 2 枚を同じ大きさで並べる */
 
 .process { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 24px; }
 .process li { border-top: 1px solid rgba(237,236,232,.3); padding-top: 16px; }
@@ -117,7 +120,12 @@ button { font: inherit; }
 .process h4 { margin: 6px 0 8px; font-family: var(--mincho); font-weight: 600; font-size: 20px; }
 .process p { margin: 0; font-size: 14px; line-height: 1.9; color: var(--silver); }
 
-.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 12px; }
+.tiles { --cols: 4; display: grid; gap: 12px;
+  /* 1 行の最大列数を --cols に抑えつつ、狭い画面では最小 140px で折り返す（スマホは 2 列） */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, max(140px, calc((100% - 12px * (var(--cols) - 1)) / var(--cols)))), 1fr)); }
+.tiles.cols-3 { --cols: 3; } /* 枚数が 3 の倍数（4 の倍数でない）ときは 3 列にして最終行を揃える */
+@media (max-width: 700px) { .tiles:not(.cols-3) { grid-template-columns: repeat(2, 1fr); } } /* 4 の倍数の枚数は、中間幅で 3 列になって最終行が余らないよう 2 列に */
+@media (max-width: 520px) { .tiles { grid-template-columns: repeat(2, 1fr); } .tile:last-child:nth-child(odd) { grid-column: 1 / -1; } } /* スマホは 2 列固定。奇数枚のとき最後の 1 枚を横いっぱいに */
 .tile { padding: 0; border: 0; background: #000; cursor: zoom-in; position: relative; overflow: hidden; text-align: left; color: inherit; }
 .tile img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; transition: transform .6s, opacity .3s; }
 .tile:hover img { transform: scale(1.04); opacity: .9; }
@@ -139,7 +147,9 @@ button { font: inherit; }
 .dark .dl, .dark .dl dt, .dark .dl dd { border-color: rgba(237,236,232,.16); }
 .dark .dl dt { color: var(--silver-2); }
 
-.ws { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 24px; }
+.ws { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+@media (max-width: 1099px) { .ws { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 599px) { .ws { grid-template-columns: 1fr; } }
 .ws article { display: flex; flex-direction: column; gap: 10px; }
 .ws img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 .ws .meta { display: flex; gap: 16px; font-size: 12px; color: var(--ink-3); font-family: var(--mono); letter-spacing: .06em; }
@@ -153,6 +163,8 @@ button { font: inherit; }
 .news { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
 .news li { border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 112px 64px minmax(0, 1fr); gap: 16px; align-items: baseline; padding: 18px 0; }
 .news time { font-family: var(--mono); font-size: 13px; color: var(--ink-3); }
+.news-list { grid-column: span 2; }
+@media (max-width: 700px) { .news-list { grid-column: span 1; } } /* 1 列のとき span 2 が暗黙の 2 列目を作り、320px で横にはみ出していた */
 .news .cat { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; border: 1px solid var(--line); text-align: center; line-height: 1.8; }
 .news p { margin: 0; font-size: 15px; line-height: 1.7; }
 .news small { display: block; color: var(--ink-3); font-size: 13px; }
