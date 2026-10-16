@@ -76,11 +76,19 @@ CONTACT_FROM="株式会社タツミ <noreply@your-domain.jp>"   # 省略時は n
 npm install
 npm run dev        # http://localhost:3000（Turbopack）
 npm run typecheck
-npm run lint
 npm run build
+npm run verify    # typecheck + build（変更後の標準チェック）
+npm run smoke     # build 後に主要ルートと /api/contact を確認
 ```
+
+> ESLint は未設定のため `npm run lint` は使えません（対話プロンプトで止まります）。
 
 ## デプロイ（Vercel）
 
 GitHub に push → Vercel で Import（Framework: Next.js、設定変更不要）→ 上記の環境変数を登録。
 `content/site.ts` の `site.url` が OGP の絶対 URL に使われます。
+
+## エージェント向けドキュメント
+
+`CLAUDE.md`（入口）/ `AGENTS.md` / `docs/agents/`（architecture・content-guide・workflow）/ `.claude/skills/`（verify・add-news）。
+CI は `.github/workflows/ci.yml`（`verify` + `smoke`）。
