@@ -4,7 +4,8 @@
 詳細ドキュメントは `docs/agents/` にあります（architecture / content-guide / workflow）。
 
 最低限のルール:
-- 変更後は `npm run verify`（typecheck + lint + build）を通す。lint は警告 0 件を維持する。
+- 変更後は `npm run verify`（typecheck + lint + 画像寸法チェック + build）を通す。lint は警告 0 件を維持する。
+- 画像は `components/Pic.tsx`（next/image）で表示。追加・差し替え後は `npm run images:sizes`。
 - 文言・URL・画像参照は `content/site.ts` に集約。JSX に直書きしない。
 - TODO の項目（予約 URL・SNS・会社概要の詳細）は推測で埋めない。
 - `main` に直接 push せず、ブランチ + ドラフト PR で出す。

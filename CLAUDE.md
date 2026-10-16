@@ -12,10 +12,11 @@
 | 型チェック | `npm run typecheck` | 数秒 |
 | Lint | `npm run lint` | ESLint 9 + `next/core-web-vitals` + `next/typescript`。警告 0 件を維持（`--max-warnings 0`） |
 | 本番ビルド | `npm run build` | 約 40 秒。Google Fonts を取得するので外部ネットワークが必要 |
-| **標準の検証** | `npm run verify` | typecheck + lint + build。変更後は必ずこれを通す |
+| 画像寸法 | `npm run images:sizes` | `public/images/tatsumi/` に画像を追加・差し替えたら実行し、`content/image-sizes.json` をコミット |
+| **標準の検証** | `npm run verify` | typecheck + lint + 画像寸法チェック + build。変更後は必ずこれを通す |
 | スモークテスト | `npm run smoke` | `build` 後に実行。主要ルートと `/api/contact` を確認 |
 
-ESLint の設定は `eslint.config.mjs`。ルールを無効化して通すのではなく、コードを直す。やむを得ず無効化する場合は理由をコメントに書く（現在の例外は `@next/next/no-img-element` のみ。`<img>` から `next/image` への移行は別タスク）。
+ESLint の設定は `eslint.config.mjs`。ルールを無効化して通すのではなく、コードを直す。やむを得ず無効化する場合は理由をコメントに書く（現在、無効化しているルールはない）。
 テストフレームワークはない。品質ゲートは `verify` + `smoke`。
 
 ## 構造（要点）
@@ -26,7 +27,8 @@ ESLint の設定は `eslint.config.mjs`。ルールを無効化して通すの�
 - `app/api/contact/route.ts` + `lib/contactSchema.ts` … お問い合わせ。zod で検証し、Resend で送信（環境変数未設定ならログのみ）。
 - `components/` … Header / Hero / Gallery / ContactForm / Footer / Reveal。クライアントコンポーネントは `"use client"` 付きのみ。
 - `app/globals.css` … スタイルはここ 1 枚（CSS Modules / Tailwind は不使用）。
-- `public/images/tatsumi/` … 画像。`content/site.ts` から `img("ファイル名", "alt")` で参照。
+- `public/images/tatsumi/` … 画像。`content/site.ts` から `img("ファイル名", "alt")` で参照。寸法は `content/image-sizes.json`（生成物）から引く。
+- `components/Pic.tsx` … `next/image` のラッパー。**`<img>` を直接書かない**（lint ではなく規約）。`sizes` は必ず指定する。
 
 詳細: `docs/agents/architecture.md`、コンテンツ更新手順: `docs/agents/content-guide.md`。
 

@@ -7,9 +7,16 @@
  *   本番前にクライアントから元データ（高解像度）を受け取って差し替えるのが理想です。
  */
 import newsData from "./news.json";
+import imageSizes from "./image-sizes.json";
 
-export type Img = { src: string; alt: string };
-const img = (name: string, alt: string): Img => ({ src: `/images/tatsumi/${name}`, alt });
+export type Img = { src: string; alt: string; width: number; height: number };
+const sizes: Record<string, number[] | undefined> = imageSizes;
+// 寸法は content/image-sizes.json（npm run images:sizes で生成）から引く。未登録ならビルドを落とす。
+const img = (name: string, alt: string): Img => {
+  const size = sizes[name];
+  if (!size || size.length !== 2) throw new Error(`content/image-sizes.json に ${name} がありません。 npm run images:sizes を実行してください。`);
+  return { src: `/images/tatsumi/${name}`, alt, width: size[0], height: size[1] };
+};
 
 export const site = {
   name: "TATSUMI",

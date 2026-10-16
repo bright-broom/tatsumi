@@ -24,6 +24,11 @@ check "GET /news"    200 "$(code "$BASE/news")"
 check "GET /privacy" 200 "$(code "$BASE/privacy")"
 check "GET /nope"    404 "$(code "$BASE/nope")"
 
+# next/image の最適化（sharp）が動き、WebP で返ること
+IMG='/_next/image?url=%2Fimages%2Ftatsumi%2Fhero-1.jpg&w=1080&q=75'
+check "image optimizer" 200 "$(curl -s -o /dev/null -w "%{http_code}" -H 'Accept: image/webp' "$BASE$IMG")"
+check "image is webp"   "image/webp" "$(curl -s -o /dev/null -w "%{content_type}" -H 'Accept: image/webp' "$BASE$IMG")"
+
 J='Content-Type: application/json'
 check "contact valid"     200 "$(code -X POST "$BASE/api/contact" -H "$J" -d '{"name":"a","email":"a@b.jp","message":"hi","confirmed":true}')"
 check "contact unchecked" 400 "$(code -X POST "$BASE/api/contact" -H "$J" -d '{"name":"a","email":"a@b.jp","message":"hi"}')"

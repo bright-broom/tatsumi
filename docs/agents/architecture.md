@@ -59,6 +59,7 @@ ContactForm (client) ─POST─> app/api/contact/route.ts ─> Resend（任意�
 
 `app/globals.css` 1 枚（約 200 行）。フォントは `next/font/google` で Shippori Mincho / Zen Kaku Gothic New / IBM Plex Mono を取得。
 ビルド時に Google Fonts へアクセスするため、**ネットワークが遮断された環境では `npm run build` が失敗する**。
+画像は `components/Pic.tsx`（`next/image`）で描画する。寸法は `content/image-sizes.json`（`scripts/image-sizes.mjs` が生成、`npm run images:check` で検証）。CSS の `img { height: auto }` と各所の `aspect-ratio` / `object-fit` で表示サイズを決めており、`width`/`height` 属性は縦横比の予約にだけ使う。Hero の 1 枚目のみ `priority`、他のスライドは `loading="eager"`（フェード切替で遅延読み込みが見えるのを避けるため）。`sizes` は配置ごとに指定している。
 スクロール表示は `Reveal`（IntersectionObserver で `.reveal` に `.in` を付与）。
 
 ## 既知の事項
