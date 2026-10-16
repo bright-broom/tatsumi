@@ -73,6 +73,7 @@ button { font: inherit; }
 .menu-btn { display: none; width: 44px; height: 44px; align-items: center; justify-content: center; background: none; border: 1px solid rgba(237,236,232,.3); color: var(--ash); cursor: pointer; }
 .drawer { position: fixed; inset: 0; z-index: 60; background: var(--charcoal); color: var(--ash); padding: 96px var(--pad) 40px; transform: translateY(-100%); transition: transform .45s cubic-bezier(.2,.7,.2,1); overflow-y: auto; }
 .drawer.open { transform: none; }
+a.tel { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; } /* 文章中のリンクを色だけに頼らず区別する */
 .drawer ul { list-style: none; margin: 0; padding: 0; }
 .drawer li a { display: flex; justify-content: space-between; align-items: baseline; padding: 18px 0; border-bottom: 1px solid rgba(237,236,232,.14); font-family: var(--mincho); font-size: 22px; }
 .drawer li a small { font-family: var(--mono); font-size: 11px; color: var(--silver-2); letter-spacing: .16em; }
@@ -197,6 +198,7 @@ button { font: inherit; }
 .footer-bottom { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(237,236,232,.1); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 12px; }
 
 /* Sub pages */
+.page-head .label { color: var(--accent-dark); } /* 暗い背景では焼土の明るい方（明るい背景用の色だとコントラスト 2.9:1） */
 .page-head { background: var(--charcoal); color: var(--ash); padding: clamp(56px, 8vw, 96px) var(--pad) clamp(40px, 5vw, 64px); }
 
 /* Reveal */
