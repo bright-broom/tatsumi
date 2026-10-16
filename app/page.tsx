@@ -5,6 +5,7 @@ import Gallery from "@/components/Gallery";
 import ContactForm from "@/components/ContactForm";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
+import Pic from "@/components/Pic";
 import { about, company, gallery, history, kaze, news, onigawara, products, sdgs, shop, site, suisan, visit } from "@/content/site";
 
 const Arrow = () => (
@@ -32,7 +33,7 @@ export default function Home() {
               </div>
             </div>
             <div className="img-pair reveal">
-              {about.images.map((i) => <img key={i.src} src={i.src} alt={i.alt} loading="lazy" />)}
+              {about.images.map((i) => <Pic key={i.src} img={i} sizes="(max-width: 960px) 50vw, 25vw" />)}
             </div>
           </div>
         </section>
@@ -48,7 +49,7 @@ export default function Home() {
               <p className="lead">{onigawara.lead}</p>
             </div>
             <div className="grid2 reveal" style={{ alignItems: "center" }}>
-              <img src={onigawara.onishi.image.src} alt={onigawara.onishi.image.alt} loading="lazy" style={{ width: "100%", aspectRatio: "3 / 2", objectFit: "cover" }} />
+              <Pic img={onigawara.onishi.image} sizes={"(max-width: 960px) 100vw, 50vw"} style={{ width: "100%", aspectRatio: "3 / 2", objectFit: "cover" }} />
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <h3 className="h3">{onigawara.onishi.title}</h3>
                 <p className="lead">{onigawara.onishi.body}</p>
@@ -89,12 +90,12 @@ export default function Home() {
                 <h2 className="h2" id="kaze-h">{kaze.heading}<br /><span style={{ fontSize: "0.55em" }}>{kaze.sub}</span></h2>
                 <p className="lead">{kaze.lead}</p>
               </div>
-              <img src={kaze.image.src} alt={kaze.image.alt} loading="lazy" style={{ width: "100%", aspectRatio: "3 / 2", objectFit: "cover" }} />
+              <Pic img={kaze.image} sizes={"(max-width: 960px) 100vw, 50vw"} style={{ width: "100%", aspectRatio: "3 / 2", objectFit: "cover" }} />
             </div>
             <div className="series">
               {kaze.series.map((s) => (
                 <article className="card reveal" key={s.name} style={{ background: "var(--ash)" }}>
-                  <img src={s.image.src} alt={s.image.alt} loading="lazy" />
+                  <Pic img={s.image} sizes="(max-width: 960px) 100vw, 50vw" />
                   <div className="card-body">
                     <p className="label" style={{ margin: 0 }}>{s.en}</p>
                     <h3 className="h3">{s.name}</h3>
@@ -135,7 +136,7 @@ export default function Home() {
               <a className="btn btn-solid" href={site.reserveUrl}>見学・体験を予約する <Arrow /></a>
             </div>
             <div className="grid2 reveal" style={{ alignItems: "center" }}>
-              <img src={visit.tour.image.src} alt={visit.tour.image.alt} loading="lazy" style={{ width: "100%", aspectRatio: "3 / 2", objectFit: "cover" }} />
+              <Pic img={visit.tour.image} sizes={"(max-width: 960px) 100vw, 50vw"} style={{ width: "100%", aspectRatio: "3 / 2", objectFit: "cover" }} />
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <h3 className="h3">{visit.tour.title}</h3>
                 <p className="lead">{visit.tour.text}</p>
@@ -149,7 +150,7 @@ export default function Home() {
               <div className="ws">
                 {visit.workshops.map((w) => (
                   <article key={w.title} className="reveal">
-                    <img src={w.image.src} alt={w.image.alt} loading="lazy" />
+                    <Pic img={w.image} sizes="(max-width: 600px) 100vw, 33vw" />
                     <h4 style={{ margin: "6px 0 0", fontFamily: "var(--mincho)", fontSize: 19, fontWeight: 600 }}>{w.title}</h4>
                     <p className="muted" style={{ margin: 0, fontSize: 14, lineHeight: 1.9 }}>{w.text}</p>
                     <div className="meta"><span>⏱ {w.time}</span><span>{w.price}</span></div>
@@ -181,13 +182,13 @@ export default function Home() {
               <h2 className="h2" id="history-h">{history.heading}</h2>
               {history.body.map((p) => <p className="lead" key={p.slice(0, 12)}>{p}</p>)}
               <div className="img-pair" style={{ marginTop: 8 }}>
-                {history.images.map((i) => <img key={i.src} src={i.src} alt={i.alt} loading="lazy" style={{ aspectRatio: "4 / 3" }} />)}
+                {history.images.map((i) => <Pic key={i.src} img={i} sizes="(max-width: 960px) 50vw, 25vw" style={{ aspectRatio: "4 / 3" }} />)}
               </div>
             </div>
             <div className="reveal" style={{ display: "flex", flexDirection: "column", gap: 16, alignSelf: "start", position: "sticky", top: 96 }}>
               <div className="aun">
                 {history.aun.images.map((i, k) => (
-                  <figure key={i.src}><img src={i.src} alt={i.alt} loading="lazy" /><figcaption>{k === 0 ? "阿" : "吽"}</figcaption></figure>
+                  <figure key={i.src}><Pic img={i} sizes="(max-width: 960px) 50vw, 25vw" /><figcaption>{k === 0 ? "阿" : "吽"}</figcaption></figure>
                 ))}
               </div>
               <h3 className="h3">{history.aun.title}</h3>
@@ -205,7 +206,7 @@ export default function Home() {
               <p className="lead">{suisan.text}</p>
               <p className="muted" style={{ margin: 0, fontSize: 14 }}>水産部 TEL {suisan.contact.tel}／FAX {suisan.contact.fax}</p>
               <div className="img-pair">
-                {suisan.images.map((i) => <img key={i.src} src={i.src} alt={i.alt} loading="lazy" style={{ aspectRatio: "4 / 3" }} />)}
+                {suisan.images.map((i) => <Pic key={i.src} img={i} sizes="(max-width: 960px) 50vw, 25vw" style={{ aspectRatio: "4 / 3" }} />)}
               </div>
             </div>
             <div className="reveal" style={{ display: "flex", flexDirection: "column", gap: 20, borderTop: "1px solid rgba(237,236,232,.2)", paddingTop: 28, alignSelf: "end" }}>
@@ -251,7 +252,7 @@ export default function Home() {
               </dl>
             </div>
             <div className="reveal" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <img src={company.image.src} alt={company.image.alt} loading="lazy" style={{ width: "100%", aspectRatio: "3 / 2", objectFit: "cover" }} />
+              <Pic img={company.image} sizes={"(max-width: 960px) 100vw, 50vw"} style={{ width: "100%", aspectRatio: "3 / 2", objectFit: "cover" }} />
               <iframe
                 title="株式会社タツミの地図"
                 src="https://maps.google.com/maps?q=%E5%85%B5%E5%BA%AB%E7%9C%8C%E5%8D%97%E3%81%82%E3%82%8F%E3%81%98%E5%B8%82%E6%B4%A5%E4%BA%95976&z=14&output=embed"

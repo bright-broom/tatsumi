@@ -5,6 +5,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import Fade from "embla-carousel-fade";
 import { hero } from "@/content/site";
+import Pic from "@/components/Pic";
 
 export default function Hero() {
   const [ref, api] = useEmblaCarousel({ loop: true, duration: 40 }, [Autoplay({ delay: 5500, stopOnInteraction: false }), Fade()]);
@@ -34,8 +35,8 @@ export default function Hero() {
         <div className="hero-visual">
           <div className="embla" ref={ref}>
             <div className="embla__container">
-              {hero.slides.map((s) => (
-                <div className="embla__slide" key={s.src}><img src={s.src} alt={s.alt} /></div>
+              {hero.slides.map((s, i) => (
+                <div className="embla__slide" key={s.src}><Pic img={s} sizes="(max-width: 900px) 100vw, 55vw" {...(i === 0 ? { priority: true } : { loading: "eager" as const })} /></div>
               ))}
             </div>
           </div>
