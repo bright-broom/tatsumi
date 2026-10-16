@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: { default: `${site.legalName}｜淡路鬼瓦の指定窯元`, template: `%s｜${site.legalName}` },
   description: site.description,
+  alternates: { canonical: "./" },
   openGraph: {
     type: "website",
     locale: "ja_JP",

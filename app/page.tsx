@@ -6,6 +6,7 @@ import ContactForm from "@/components/ContactForm";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import Pic from "@/components/Pic";
+import { localBusinessJsonLd } from "@/lib/structuredData";
 import { about, company, gallery, history, kaze, news, onigawara, products, sdgs, shop, site, suisan, visit } from "@/content/site";
 
 const Arrow = () => (
@@ -15,6 +16,7 @@ const Arrow = () => (
 export default function Home() {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: localBusinessJsonLd() }} />
       <Header />
       <main>
         <Hero />

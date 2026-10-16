@@ -39,6 +39,18 @@ check "GET /news"    200 "$(code "$BASE/news")"
 check "GET /privacy" 200 "$(code "$BASE/privacy")"
 check "GET /nope"    404 "$(code "$BASE/nope")"
 
+# SEO・セキュリティ関連
+check "robots.txt"  200 "$(code "$BASE/robots.txt")"
+check "robots lists sitemap" 1 "$(curl -s "$BASE/robots.txt" | grep -c '^Sitemap: https://')"
+check "sitemap has 3 urls"   3 "$(curl -s "$BASE/sitemap.xml" | grep -o '<loc>' | wc -l | tr -d ' ')"
+check "canonical on /news"   1 "$(curl -s "$BASE/news" | grep -c '<link rel="canonical" href="https://[^"]*/news"')"
+check "json-ld on /"         1 "$(curl -s "$BASE/" | grep -c 'application/ld+json')"
+HDRS="$(curl -sI "$BASE/")"
+check "header nosniff"       1 "$(echo "$HDRS" | grep -ci '^x-content-type-options: nosniff')"
+check "header frame deny"    1 "$(echo "$HDRS" | grep -ci '^x-frame-options: DENY')"
+check "header referrer"      1 "$(echo "$HDRS" | grep -ci '^referrer-policy:')"
+check "no x-powered-by"      0 "$(echo "$HDRS" | grep -ci '^x-powered-by')"
+
 # next/image の最適化（sharp）が動き、WebP で返ること
 IMG='/_next/image?url=%2Fimages%2Ftatsumi%2Fhero-1.jpg&w=1080&q=75'
 check "image optimizer" 200 "$(code -H 'Accept: image/webp' "$BASE$IMG")"
