@@ -15,6 +15,7 @@
 | 画像寸法 | `npm run images:sizes` | `public/images/tatsumi/` に画像を追加・差し替えたら実行し、`content/image-sizes.json` をコミット |
 | **標準の検証** | `npm run verify` | typecheck + lint + 画像寸法チェック + build。変更後は必ずこれを通す |
 | スモークテスト | `npm run smoke` | `build` 後に実行。主要ルートと `/api/contact` を確認 |
+| アクセシビリティ | `npm run a11y` | `build` 後に実行。axe-core で全ページ（PC/スマホ・メニュー開・フォームのエラー表示）を走査。違反 0 件が条件。要 Chromium（`npx playwright install chromium`。クラウド環境には導入済み） |
 
 ESLint の設定は `eslint.config.mjs`。ルールを無効化して通すのではなく、コードを直す。やむを得ず無効化する場合は理由をコメントに書く（現在、無効化しているルールはない）。
 テストフレームワークはない。品質ゲートは `verify` + `smoke`。
@@ -53,6 +54,6 @@ ESLint の設定は `eslint.config.mjs`。ルールを無効化して通すの�
 ## 完了の定義
 
 1. `npm run verify` が通り、ビルド警告が 0 件であること（警告は新規に出したら直す）。
-2. 動作に影響する変更は `npm run build && npm run smoke` も通る。
+2. 動作に影響する変更は `npm run build && npm run smoke` も通る。見た目・HTML・色・フォーム・メニューに触れたら `npm run a11y` も通す（CI でも実行される）。
 3. UI 変更は実際に表示して確認（`npm run dev` またはビルド後の `next start`）。型が通ることは見た目が正しい証拠にならない。
 4. `git status` が意図した差分だけ。`dev.log` などのログ、`.next`、`node_modules` をコミットしない。

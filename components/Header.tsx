@@ -28,7 +28,7 @@ export default function Header({ sub = false }: { sub?: boolean }) {
   return (
     <header className="header">
       <div className="header-in">
-        <a href={sub ? "/" : "#top"} className="brand" aria-label={`${site.legalName} トップへ`}>
+        <a href={sub ? "/" : "#top"} className="brand">
           <span className="brand-mark">TATSUMI</span>
           <span className="brand-sub">淡路鬼瓦 指定窯元</span>
         </a>

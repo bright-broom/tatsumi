@@ -44,7 +44,7 @@
 2. （完了）ESLint 導入済み。
 3. ★ Turnstile を本番で有効化する（コードは実装済み・既定は無効）。キー発行、Vercel への環境変数設定、`/privacy` への記載が必要（`architecture.md` 参照）。
 4. ★ レート制限を共有ストア（Upstash / Vercel KV）に移す。
-5. （完了）a11y の監査と修正。axe-core（WCAG 2.0/2.1/2.2 AA + best-practice）でトップ・`/news`・`/privacy` が違反 0 件、メニューのキーボード操作も確認済み。**次は axe を CI に組み込んで退行を防ぐ**（`axe-core` と Playwright を devDependency に足す判断が要る）。Lightbox のキー操作は未確認。
+5. （完了）a11y: 監査・修正し、`npm run a11y`（axe）を CI に組み込み済み。未確認: Lightbox（画像拡大）のキー操作、Turnstile ウィジェット表示時の状態。
 6. （完了）画像は `next/image` に移行済み。
 7. ★ TODO 項目の確定（クライアントからの情報待ち）。favicon 用のシンボルマークもここに含む（`architecture.md` 参照）。
 8. ★ CSP の導入（Turnstile の本番有効化後、レポートのみ → 強制の順で）。

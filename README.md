@@ -274,12 +274,13 @@ npm run dev        # http://localhost:3000（Turbopack）
 | `npm run build` | 本番ビルド（Google Fonts を取得するため外部ネットワークが必要） |
 | **`npm run verify`** | **typecheck + lint + 画像寸法チェック + build（変更後の標準チェック）** |
 | `npm run smoke` | build 後に実行。ルート・SEO・ヘッダー・画像最適化・問い合わせ API の全判定を確認 |
+| `npm run a11y` | build 後に実行。axe-core で全ページを走査（PC/スマホ・メニュー開・フォームのエラー表示）。違反 0 件が条件。Chromium が要る（`npx playwright install chromium`） |
 
 ---
 
 ## CI と品質ゲート
 
-PR と `main` への push で GitHub Actions が `verify` と `smoke` を実行します。Dependabot が依存の更新を週次で提案します（メジャー更新は除く）。
+PR と `main` への push で GitHub Actions が `verify`・`smoke`・`a11y` を実行します。Dependabot が依存の更新を週次で提案します（メジャー更新は除く）。
 
 ```mermaid
 flowchart LR
@@ -290,7 +291,8 @@ flowchart LR
   pr(["Pull Request / main への push"]) --> ci["GitHub Actions"]
   ci --> verify
   verify --> sm["npm run smoke<br/>34 項目"]
-  sm --> ok{"すべて成功"}
+  sm --> ax["npm run a11y<br/>axe-core 8 走査"]
+  ax --> ok{"すべて成功"}
   ok -->|"はい"| merge["マージ可能"]
   ok -->|"いいえ"| fix["原因を直して再 push"]
   dep["Dependabot<br/>週次・メジャー除く"] -.-> pr
@@ -309,6 +311,21 @@ flowchart TB
 ```
 
 メールは実際には送られません。ダミーの Resend 設定で起動し、「送信を試みた = 502」「bot として破棄 = 200」の違いで振り分けを検証します。
+
+アクセシビリティは `npm run a11y`（axe-core + Playwright）が、本番ビルドを実ブラウザで走査します。違反が 1 件でもあれば失敗し、CI で退行を防ぎます。
+
+```mermaid
+flowchart LR
+  run["npm run a11y"] --> std["基準<br/>WCAG 2.0 / 2.1 / 2.2 の A・AA<br/>+ axe best-practice"]
+  run --> pages["通常表示<br/>/ ・ /news ・ /privacy<br/>x PC 1280 / スマホ 390"]
+  run --> st1["スマホ<br/>メニューを開いた状態"]
+  run --> st2["PC<br/>フォームのエラー表示<br/>未入力で送信"]
+  pages --> res{"違反 0 件"}
+  st1 --> res
+  st2 --> res
+  res -->|"はい"| okk["成功"]
+  res -->|"いいえ"| ng["失敗 exit 1<br/>ルール・要素を表示"]
+```
 
 ---
 
