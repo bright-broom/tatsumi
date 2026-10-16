@@ -64,5 +64,5 @@ ContactForm (client) ─POST─> app/api/contact/route.ts ─> Resend（任意�
 ## 既知の事項
 
 - ビルド警告: `globals.css` の autoprefixer 警告（`end value has mixed support, consider using flex-end`）が 1 件。動作には影響なし。
-- ESLint 未設定、テストフレームワークなし。品質ゲートは `npm run verify` と `npm run smoke`。
+- ESLint 9（`eslint.config.mjs`、`next/core-web-vitals` + `next/typescript`）。テストフレームワークはなし。品質ゲートは `npm run verify` と `npm run smoke`。
 - 画像は現行サイトから取得した Web 用解像度。高解像度の元データへの差し替えは未了。
