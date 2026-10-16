@@ -94,6 +94,8 @@ ContactForm (client) ─POST─> app/api/contact/route.ts ─> Resend（任意�
 - 暗い背景（`.page-head`、`.dark` セクション）のラベルは `--accent-dark`。明るい背景用の `--accent` だとコントラストが 2.9:1 で不足する。
 - キャプション付きの一覧では画像の `alt` を `""` にする（キャプションと二重読み上げになるため。`Pic` の `alt` で上書き）。
 - 色を足すときは、背景ごとにコントラスト比 4.5:1（大きな文字は 3:1）を満たすか確認する。
+- `aria-label` で見えている文字と別の名前を付けない（WCAG 2.5.3 Label in Name。ロゴリンクはこれで違反していたので、名前は見えている文字から取る）。
+- **`npm run a11y`**（`scripts/a11y.mjs`）が CI で退行を防ぐ。axe-core（WCAG 2.0/2.1/2.2 A・AA + best-practice）を、全ページ × PC/スマホ、スマホのメニュー開、PC のフォームのエラー表示で走査し、違反が 1 件でもあれば失敗する。ページや状態（モーダルなど）を足したら `scripts/a11y.mjs` の走査対象にも足す。Playwright は devDependency（バージョンはサンドボックスの Chromium に合わせて固定）。
 
 ## SEO・セキュリティ設定
 
