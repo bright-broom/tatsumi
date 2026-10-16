@@ -76,12 +76,12 @@ CONTACT_FROM="株式会社タツミ <noreply@your-domain.jp>"   # 省略時は n
 npm install
 npm run dev        # http://localhost:3000（Turbopack）
 npm run typecheck
+npm run lint       # ESLint（警告 0 件を維持）
 npm run build
-npm run verify    # typecheck + build（変更後の標準チェック）
+npm run verify     # typecheck + lint + build（変更後の標準チェック）
 npm run smoke     # build 後に主要ルートと /api/contact を確認
 ```
 
-> ESLint は未設定のため `npm run lint` は使えません（対話プロンプトで止まります）。
 
 ## デプロイ（Vercel）
 

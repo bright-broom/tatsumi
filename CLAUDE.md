@@ -10,12 +10,13 @@
 | 依存導入 | `npm ci` | |
 | 開発サーバー | `npm run dev` | http://localhost:3000 |
 | 型チェック | `npm run typecheck` | 数秒 |
+| Lint | `npm run lint` | ESLint 9 + `next/core-web-vitals` + `next/typescript`。警告 0 件を維持（`--max-warnings 0`） |
 | 本番ビルド | `npm run build` | 約 40 秒。Google Fonts を取得するので外部ネットワークが必要 |
-| **標準の検証** | `npm run verify` | typecheck + build。変更後は必ずこれを通す |
+| **標準の検証** | `npm run verify` | typecheck + lint + build。変更後は必ずこれを通す |
 | スモークテスト | `npm run smoke` | `build` 後に実行。主要ルートと `/api/contact` を確認 |
 
-**`npm run lint` は実行しない。** ESLint の設定がなく、`next lint` が対話プロンプトで止まる（自動化で固まる）。
-ESLint を入れる判断は人間に確認する（`docs/agents/workflow.md` 参照）。テストフレームワークもない。品質ゲートは `verify` + `smoke`。
+ESLint の設定は `eslint.config.mjs`。ルールを無効化して通すのではなく、コードを直す。やむを得ず無効化する場合は理由をコメントに書く（現在の例外は `@next/next/no-img-element` のみ。`<img>` から `next/image` への移行は別タスク）。
+テストフレームワークはない。品質ゲートは `verify` + `smoke`。
 
 ## 構造（要点）
 

@@ -10,7 +10,7 @@ description: 変更後にこのサイトを検証する。typecheck + build + �
 ## 手順
 
 1. `git status` で差分が意図したものだけか確認する（`dev.log`、`.next`、`node_modules` が混ざっていないこと）。
-2. `npm run verify` を実行する（typecheck → build）。
+2. `npm run verify` を実行する（typecheck → lint → build）。
    - 失敗したら原因を特定して直す。チェックを外して通さない。
    - フォント取得（Google Fonts）でネットワークエラーなら、コードの問題ではなく環境の問題として報告する。
 3. `npm run smoke` を実行する（`build` 済みであること）。8 項目すべて `ok` になること。
@@ -19,9 +19,9 @@ description: 変更後にこのサイトを検証する。typecheck + build + �
    - 既知の警告は `globals.css` の autoprefixer 1 件のみ。**新しい警告が出たら直す。**
 5. UI に関わる変更は、実際に表示して確認する（`npm run dev` を起動して該当セクションを見る）。
 
-## 実行しないもの
+## 補足
 
-- `npm run lint` — ESLint 未設定で対話プロンプトが出て固まる。
+- lint は警告 0 件が条件（`--max-warnings 0`）。ルールを無効化して通さず、コードを直す。
 
 ## 報告の形式
 
