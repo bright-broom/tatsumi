@@ -16,7 +16,7 @@ description: 変更後にこのサイトを検証する。typecheck + build + �
 3. `npm run smoke` を実行する（`build` 済みであること）。25 項目すべて `ok` になること。
 4. build の出力を確認する。
    - ルート一覧が `/`, `/news`, `/privacy` = ○（静的）、`/api/contact` = ƒ（動的）であること。
-   - 既知の警告は `globals.css` の autoprefixer 1 件のみ。**新しい警告が出たら直す。**
+   - ビルド警告は 0 件が基準。**警告が出たら直す。**
 5. UI に関わる変更は、実際に表示して確認する（`npm run dev` を起動して該当セクションを見る）。
 
 ## 補足
