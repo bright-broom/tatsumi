@@ -12,9 +12,11 @@ type Props = { images: Img[]; captions?: boolean; variant?: "square" | "wide"; l
 
 export default function Gallery({ images, captions = false, variant, light }: Props) {
   const [index, setIndex] = useState(-1);
+  // 4 列で最終行が余る枚数（9 枚など）は 3 列にする
+  const cols3 = images.length % 4 !== 0 && images.length % 3 === 0;
   return (
     <>
-      <div className={`tiles reveal ${variant ?? ""} ${light ? "on-light" : ""}`}>
+      <div className={`tiles reveal ${variant ?? ""} ${light ? "on-light" : ""} ${cols3 ? "cols-3" : ""}`}>
         {images.map((img, i) => (
           <button key={img.src} type="button" className="tile" onClick={() => setIndex(i)} aria-label={`${img.alt}を拡大`}>
             <Pic img={img} sizes="(max-width: 480px) 100vw, (max-width: 1080px) 33vw, 25vw" />

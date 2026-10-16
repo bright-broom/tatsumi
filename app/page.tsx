@@ -183,7 +183,7 @@ export default function Home() {
               <p className="label" style={{ margin: 0 }}>08 — {history.label}</p>
               <h2 className="h2" id="history-h">{history.heading}</h2>
               {history.body.map((p) => <p className="lead" key={p.slice(0, 12)}>{p}</p>)}
-              <div className="img-pair" style={{ marginTop: 8 }}>
+              <div className="img-pair even" style={{ marginTop: 8 }}>
                 {history.images.map((i) => <Pic key={i.src} img={i} sizes="(max-width: 960px) 50vw, 25vw" style={{ aspectRatio: "4 / 3" }} />)}
               </div>
             </div>
@@ -207,7 +207,7 @@ export default function Home() {
               <h2 className="h2" id="suisan-h">{suisan.heading}</h2>
               <p className="lead">{suisan.text}</p>
               <p className="muted" style={{ margin: 0, fontSize: 14 }}>水産部 TEL {suisan.contact.tel}／FAX {suisan.contact.fax}</p>
-              <div className="img-pair">
+              <div className="img-pair even">
                 {suisan.images.map((i) => <Pic key={i.src} img={i} sizes="(max-width: 960px) 50vw, 25vw" style={{ aspectRatio: "4 / 3" }} />)}
               </div>
             </div>
@@ -230,7 +230,7 @@ export default function Home() {
               <a className="link" href="/news" style={{ alignSelf: "flex-start" }}>一覧を見る →</a>
               <a className="link" href={site.blogUrl} target="_blank" rel="noopener noreferrer" style={{ alignSelf: "flex-start" }}>ブログ ↗</a>
             </div>
-            <ul className="news reveal" style={{ gridColumn: "span 2" }}>
+            <ul className="news news-list reveal">
               {news.slice(0, 6).map((n) => (
                 <li key={n.date + n.title}>
                   <time dateTime={n.date}>{n.date.replaceAll("-", ".")}</time>
