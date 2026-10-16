@@ -87,6 +87,15 @@ ContactForm (client) ─POST─> app/api/contact/route.ts ─> Resend（任意�
 画像は `components/Pic.tsx`（`next/image`）で描画する。寸法は `content/image-sizes.json`（`scripts/image-sizes.mjs` が生成、`npm run images:check` で検証）。CSS の `img { height: auto }` と各所の `aspect-ratio` / `object-fit` で表示サイズを決めており、`width`/`height` 属性は縦横比の予約にだけ使う。Hero の 1 枚目のみ `priority`、他のスライドは `loading="eager"`（フェード切替で遅延読み込みが見えるのを避けるため）。`sizes` は配置ごとに指定している。
 スクロール表示は `Reveal`（IntersectionObserver で `.reveal` に `.in` を付与）。
 
+## SEO・セキュリティ設定
+
+- `app/robots.ts` / `app/sitemap.ts`（`site.url` を基準に生成）。**ページを追加したら `app/sitemap.ts` の `paths` にも足す**（`npm run smoke` が 3 件であることを確認するので、件数も更新する）。
+- canonical は `app/layout.tsx` の `alternates.canonical: "./"` でページごとに付く。
+- 構造化データ: トップに schema.org `LocalBusiness`（`lib/structuredData.ts`）。値は `content/site.ts` の確定済み項目（社名・住所・電話・FAX・画像）だけ。営業時間などは確認が取れてから足す。
+- セキュリティヘッダー（`next.config.ts`）: `X-Content-Type-Options: nosniff` / `X-Frame-Options: DENY` / `Referrer-Policy: strict-origin-when-cross-origin` / `Permissions-Policy`（カメラ等を無効化）。`X-Powered-By` は無効。HSTS はホスティング（Vercel）側に任せている。
+- **CSP（Content-Security-Policy）は未設定。** Next の inline スクリプト用に nonce が必要で、Turnstile・Google Maps の iframe も許可リストが要るため、実際にキーを設定して動作を確認できる段階で入れる（先に入れると本番のフォームや地図が壊れるリスクがある）。
+- **favicon は未設定**（`/favicon.ico` は 404）。手元の `logo.png` は 169×40 の横長ワードマークで、そのまま使うとぼやける。クライアントから正方形のシンボルマーク（SVG か 512px 以上）をもらい、`app/icon.png`（または `app/icon.svg`）と `app/apple-icon.png` に置く。
+
 ## 既知の事項
 
 - ビルド警告は 0 件（`align-items: end` を flex 側で `flex-end` にして解消済み）。新規の警告は直す。
