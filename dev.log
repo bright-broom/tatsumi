@@ -1,0 +1,36 @@
+
+> tatsumi-site@0.1.0 dev
+> next dev --turbopack -p 3000
+
+ ⚠ You are using a non-standard "NODE_ENV" value in your environment. This creates inconsistencies in the project and is strongly advised against. Read more: https://nextjs.org/docs/messages/non-standard-node-env
+ ⚠ Installing TypeScript as it was not found while loading "next.config.ts".
+
+Installing devDependencies (npm):
+- typescript@5.8.2
+
+
+added 3 packages, and audited 41 packages in 907ms
+
+9 packages are looking for funding
+  run `npm fund` for details
+
+2 vulnerabilities (1 moderate, 1 high)
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+   ▲ Next.js 15.5.28 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.3.241:3000
+
+ ✓ Starting...
+ ✓ Ready in 728ms
+ ○ Compiling / ...
+ ✓ Compiled / in 3.4s
+ GET / 200 in 3739ms
+ ✓ Compiled /news in 144ms
+ GET /news 200 in 241ms
+ GET / 200 in 115ms
+ GET / 200 in 175ms
