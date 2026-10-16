@@ -9,7 +9,7 @@ export default function Footer({ sub = false }: { sub?: boolean }) {
           <p className="brand-mark" style={{ margin: 0 }}>TATSUMI</p>
           <p style={{ margin: "12px 0 0", lineHeight: 1.9 }}>
             {site.legalName}<br />兵庫県伝統的工芸品「淡路鬼瓦」指定窯元<br />{site.address}<br />
-            TEL <a href={`tel:${site.tel.replaceAll("-", "")}`} style={{ color: "var(--ash)" }}>{site.tel}</a>／FAX {site.fax}
+            TEL <a className="tel" href={`tel:${site.tel.replaceAll("-", "")}`} style={{ color: "var(--ash)" }}>{site.tel}</a>／FAX {site.fax}
           </p>
         </div>
         <nav aria-label="サイト内リンク">

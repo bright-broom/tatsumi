@@ -87,6 +87,14 @@ ContactForm (client) ─POST─> app/api/contact/route.ts ─> Resend（任意�
 画像は `components/Pic.tsx`（`next/image`）で描画する。寸法は `content/image-sizes.json`（`scripts/image-sizes.mjs` が生成、`npm run images:check` で検証）。CSS の `img { height: auto }` と各所の `aspect-ratio` / `object-fit` で表示サイズを決めており、`width`/`height` 属性は縦横比の予約にだけ使う。Hero の 1 枚目のみ `priority`、他のスライドは `loading="eager"`（フェード切替で遅延読み込みが見えるのを避けるため）。`sizes` は配置ごとに指定している。
 スクロール表示は `Reveal`（IntersectionObserver で `.reveal` に `.in` を付与）。
 
+## アクセシビリティ
+
+- スマホのメニュー（`.drawer`）は閉じている間 `inert`。開くと閉じるボタンへ、閉じると開くボタンへフォーカスを移す（Escape でも閉じる）。`aria-hidden` だけでは中のリンクにキーボードで入れてしまう。
+- 文章中のリンク（電話番号）は色だけに頼らず下線を付ける（`a.tel`）。
+- 暗い背景（`.page-head`、`.dark` セクション）のラベルは `--accent-dark`。明るい背景用の `--accent` だとコントラストが 2.9:1 で不足する。
+- キャプション付きの一覧では画像の `alt` を `""` にする（キャプションと二重読み上げになるため。`Pic` の `alt` で上書き）。
+- 色を足すときは、背景ごとにコントラスト比 4.5:1（大きな文字は 3:1）を満たすか確認する。
+
 ## SEO・セキュリティ設定
 
 - `app/robots.ts` / `app/sitemap.ts`（`site.url` を基準に生成）。**ページを追加したら `app/sitemap.ts` の `paths` にも足す**（`npm run smoke` が 3 件であることを確認するので、件数も更新する）。

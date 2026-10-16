@@ -275,7 +275,7 @@ export default function Home() {
               <div style={{ marginTop: 8, paddingTop: 24, borderTop: "1px solid rgba(237,236,232,.16)", fontSize: 14, lineHeight: 2, color: "#D9DADC" }}>
                 <p style={{ margin: 0 }}>{site.legalName}</p>
                 <p style={{ margin: 0 }}>{site.address}</p>
-                <p style={{ margin: 0 }}>TEL <a href={`tel:${site.tel.replaceAll("-", "")}`} style={{ borderBottom: "1px solid currentColor" }}>{site.tel}</a>　FAX {site.fax}</p>
+                <p style={{ margin: 0 }}>TEL <a className="tel" href={`tel:${site.tel.replaceAll("-", "")}`}>{site.tel}</a>　FAX {site.fax}</p>
               </div>
             </div>
             <ContactForm />

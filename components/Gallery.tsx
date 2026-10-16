@@ -19,7 +19,7 @@ export default function Gallery({ images, captions = false, variant, light }: Pr
       <div className={`tiles reveal ${variant ?? ""} ${light ? "on-light" : ""} ${cols3 ? "cols-3" : ""}`}>
         {images.map((img, i) => (
           <button key={img.src} type="button" className="tile" onClick={() => setIndex(i)} aria-label={`${img.alt}を拡大`}>
-            <Pic img={img} sizes="(max-width: 480px) 100vw, (max-width: 1080px) 33vw, 25vw" />
+            <Pic img={img} alt={captions ? "" : undefined} sizes="(max-width: 480px) 100vw, (max-width: 1080px) 33vw, 25vw" />
             {captions && <span className="cap">{img.alt}</span>}
           </button>
         ))}
