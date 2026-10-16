@@ -89,6 +89,7 @@ ContactForm (client) ─POST─> app/api/contact/route.ts ─> Resend（任意�
 
 ## 既知の事項
 
-- ビルド警告: `globals.css` の autoprefixer 警告（`end value has mixed support, consider using flex-end`）が 1 件。動作には影響なし。
+- ビルド警告は 0 件（`align-items: end` を flex 側で `flex-end` にして解消済み）。新規の警告は直す。
+- 依存の脆弱性: `npm audit --omit=dev` は 0 件。Next 15.5 は PostCSS 8.4.31 を固定で同梱しており、これに既知の脆弱性（PostCSS 8.5.22 以下）があるため、`package.json` の `overrides` で `next` が使う PostCSS を `^8.5.30` に上げている。ビルド後の CSS が上書き前とバイト単位で同一であることを確認済み。**Next を更新して PostCSS 8.5.23 以上を同梱するようになったら `overrides` を削除する。** 週次の Dependabot（`.github/dependabot.yml`、メジャー更新は除外）が更新を提案する。
 - ESLint 9（`eslint.config.mjs`、`next/core-web-vitals` + `next/typescript`）。テストフレームワークはなし。品質ゲートは `npm run verify` と `npm run smoke`。
 - 画像は現行サイトから取得した Web 用解像度。高解像度の元データへの差し替えは未了。

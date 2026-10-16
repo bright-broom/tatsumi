@@ -52,7 +52,7 @@ ESLint の設定は `eslint.config.mjs`。ルールを無効化して通すの�
 
 ## 完了の定義
 
-1. `npm run verify` が通る（警告の増減も確認。既存の autoprefixer 警告 1 件は既知）。
+1. `npm run verify` が通り、ビルド警告が 0 件であること（警告は新規に出したら直す）。
 2. 動作に影響する変更は `npm run build && npm run smoke` も通る。
 3. UI 変更は実際に表示して確認（`npm run dev` またはビルド後の `next start`）。型が通ることは見た目が正しい証拠にならない。
 4. `git status` が意図した差分だけ。`dev.log` などのログ、`.next`、`node_modules` をコミットしない。
