@@ -15,7 +15,7 @@
     "a11y": "node scripts/a11y.mjs"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.9.1",
+    "@hookform/resolvers": "^5.9.2",
     "clsx": "^2.1.1",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-fade": "^8.6.0",
@@ -36,8 +36,8 @@
     "eslint": "^9.39.5",
     "eslint-config-next": "^15.5.28",
     "image-size": "^2.0.4",
-    "playwright": "1.56.1",
-    "typescript": "5.8.2"
+    "playwright": "1.64.1",
+    "typescript": "5.9.3"
   },
   "overrides": {
     "next": {
